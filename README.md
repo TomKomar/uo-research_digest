@@ -9,7 +9,15 @@ The `uo-research_digest` application automates the end-to-end workflow for ident
 ## Use
 To use the `uo-research_digest` application, start by preparing the required configuration files: an `.env` file containing API keys for OpenAI and DocAnalyzer, and a `credentials.json` file generated from your Google Cloud Platform account and your personal profile in plain text `profile.txt`. Build the Docker image with the command `docker build . -t tgk/uo-research_digest:1`, and run the application using the `Docker run`, mounting the required files and specifying an output folder. The application will retrieve emails, parse their content, and generate scored datasets of research papers. Processed papers are stored in JSON files, and PDFs are downloaded for conversion to text. The text files are uploaded to DocAnalyzer and summaries generated there are put into an MS Word document and saved for printing.
 
-**Note**: The application requires the user to confirm their identity when it accesses their Gmail account. This is a standard security measure to ensure that the user is aware of the application's actions.  
+**Note**: The application requires the user to confirm their identity when it accesses their Gmail account. This is a standard security measure to ensure that the user is aware of the application's actions. Prompt will look similar to below snippet:
+```
+Go to the following link in your browser:
+
+    https://accounts.google.com/o/oauth2/auth?client_id=...
+
+Enter verification code:
+
+```
 **Warning**: The application relies on a combination of online tools, some of them paid (OpenAI, DocAnalyzer), and may incur costs based on usage (Google provides a relaxed free tier). Please consider setting up accounts on these services and review the pricing and billing mechanism before running the application. 
 ### Required setup
 
