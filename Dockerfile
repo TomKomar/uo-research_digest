@@ -10,8 +10,5 @@ COPY . .
 # Set the environment variable for the timezone
 ENV TZ=UTC
 
-# # Create the temp directory
-# RUN mkdir /app/temp
-
 # Run the main.py script on container startup
 CMD ["python", "/app/main.py"]
