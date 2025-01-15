@@ -1,13 +1,6 @@
 # Use the official Python image from the Docker Hub
 FROM python:3.9-slim
 
-# RUN apt update
-# RUN apt install -y chromium-driver
-
-# Copy the requirements file into the container
-COPY requirements.txt .
-COPY .env .
-COPY credentials.json .
 # Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 

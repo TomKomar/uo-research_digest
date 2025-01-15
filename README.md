@@ -33,7 +33,7 @@ docker build -t tgk/uo-research_digest:1 .
 Run the project with the following command:
 
 ```
-docker run -it --rm -v your/.env:/.env -v your/credentials.json:/credentials.json -v output/folder:/data tgk/uo-research_digest:1
+docker run -it --rm -v your/.env:/.env -v your/credentials.json:/credentials.json -v your/profile.txt:/profile.txt -v output/folder:/data tgk/uo-research_digest:1
 ```
    
 Optionally you can use environment variables to pass the fitness threshold (0-1, default 0.5) and date to target email received on a specific day:
