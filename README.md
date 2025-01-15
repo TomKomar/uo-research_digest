@@ -53,6 +53,7 @@ Optionally you can use environment variables to pass the fitness threshold (0-1,
 ```
 Equally, you can set any of these in your `.env` file
 
+## Implementation
 ### Email Retrieval and Parsing
 
 The process begins with retrieving emails from a Gmail account using the Gmail API. The following functions are involved:
