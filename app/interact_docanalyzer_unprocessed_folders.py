@@ -79,8 +79,6 @@ if __name__ == '__main__':
                 if doc['name'] in processed: continue
                 if ' ' in doc['name']: continue
                 if '.pdf' in doc['name']: continue
-                # print(doc['name'])
-                # print(doc['name'][:-4], batch)
                 if doc['name'][:-4] not in batch:
                     continue
                 # print(doc)
@@ -96,11 +94,8 @@ if __name__ == '__main__':
 
         if len(conclusions) > 0:
             dest_json1 = os.path.join(root_folder,os.path.basename(folder), os.path.basename(folder)+'.json')
-            # dest_json2 = os.path.join('/data', os.path.basename(folder)+'.json')
             with open(dest_json1,'w') as oj:
                 json.dump(conclusions,oj)
-            # with open(dest_json2,'w') as oj:
-            #     json.dump(conclusions,oj)
             dest_docx =  (dest_json1)[:-5]+'.docx'
             data = read_json(dest_json1)
             create_word_document(data, dest_docx, openai_api_key)

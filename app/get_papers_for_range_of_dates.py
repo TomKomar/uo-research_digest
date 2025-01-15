@@ -16,9 +16,9 @@ from download_pdfs import process_files
 done_papers = []
 
 def process_date(date, api_key, output_dir, score_threshold, downloaded_papers, docanalyzer_key):
-    global driver
+
     all_papers = []
-    to_download = []
+
     try:
         service = get_service()
         next_date = (datetime.strptime(date, '%Y/%m/%d') + timedelta(days=1)).strftime('%Y/%m/%d')

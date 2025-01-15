@@ -8,32 +8,9 @@ import requests
 import argparse
 
 from interact_docanalyzer_unprocessed_folders import list_documents
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.chrome.options import Options
-
-# def setup_driver():
-#     options = Options()
-#     options.add_argument("--headless")
-#     options.add_argument("--disable-gpu")
-#     options.add_argument("--no-sandbox")
-#     options.add_argument("--window-size=1920,1080")
-#     driver = webdriver.Chrome(options=options)
-#     return driver
 
 def sanitize_filename(title):
     return re.sub(r'[^a-zA-Z0-9_\-]', '_', title)
-
-# def find_pdf_link(driver, url):
-#     driver.get(url)
-#     # print(url)
-#     pdf_link_element = WebDriverWait(driver, 10).until(
-#         EC.presence_of_element_located((By.XPATH, "//a[contains(@class, 'mobile-submission-download')]"))
-#     )
-#     pdf_link = pdf_link_element.get_attribute('href')
-#     return pdf_link
 
 def download_file(url, output_path):
     response = requests.get(url)
@@ -41,13 +18,6 @@ def download_file(url, output_path):
         file.write(response.content)
 
 def pdf_to_text(pdf_path, text_path):
-    """
-    Converts a PDF file to a text file.
-
-    Parameters:
-    pdf_path (str): The path to the PDF file.
-    text_path (str): The path to the output text file.
-    """
     try:
         # Open the PDF file
         with open(pdf_path, 'rb') as pdf_file:
@@ -66,16 +36,6 @@ def pdf_to_text(pdf_path, text_path):
         print(f"Error reading {pdf_path}: {e}")
 
 def upload_document(api_key, txt_path):
-    """
-    Uploads a document to the DocAnalyzer API.
-
-    Parameters:
-    api_key (str): The API key for authentication.
-    pdf_path (str): The path to the PDF to be uploaded.
-
-    Returns:
-    dict: The response from the API.
-    """
     url = "https://api.docanalyzer.ai/api/v1/doc/upload/"
     headers = {
         "Authorization": f"Bearer {api_key}"
@@ -91,7 +51,7 @@ def upload_document(api_key, txt_path):
 
 
 def process_files(filename, score_threshold, downloaded_papers, docanalyzer_key):
-    # driver = setup_driver()
+
     to_download = []
     fn = os.path.basename(filename)
     if fn.startswith('papers_and_scores-') and fn.endswith('.json'):
@@ -133,7 +93,7 @@ def process_files(filename, score_threshold, downloaded_papers, docanalyzer_key)
 
             except Exception as e:
                 print('Exception:', e)
-    # driver.quit()
+
     return to_download
 
 def main():

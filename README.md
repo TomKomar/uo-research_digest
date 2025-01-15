@@ -20,9 +20,11 @@ docanalyzer_token1=YOUR_DOCANALYZER_TOKEN1
 docanalyzer_token2=YOUR_DOCANALYZER_TOKEN2
 ```
 
-The crentials.json file needs to be generated in you Google Cloud Platform account.
+The `credentials.json` file needs to be generated in your [Google Cloud Platform Dashboard](https://console.cloud.google.com/home/dashboard).  
+You will need to have an active project, enable the Gmail API, and create OAuth 2.0 credentials. Download the credentials file and save it as `credentials.json`.
 
-profile.txt should contain information about the researcher's profile so that the OpenAI API can score the papers based on the profile.  
+
+`profile.txt` should contain information about the researcher's profile so that the OpenAI API can score the papers based on the profile.  
 
 If you use different mailing list than Paper Digest, you can change sender and email title string in `.env`, but they may require different parsing than the one used in the scripts.
 
@@ -47,7 +49,7 @@ Optionally you can use environment variables to pass the fitness threshold (0-1,
 ```
 -e score_threshold=0.5 -e target_date=20250101
 ```
-Equally, you can set any of these in your .env file
+Equally, you can set any of these in your `.env` file
 
 ### Email Retrieval and Parsing
 

@@ -11,11 +11,6 @@ import json
 import requests
 import sys
 
-
-# Add the flag to sys.argv
-# sys.argv.append('--noauth_local_webserver')
-
-# If modifying these SCOPES, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 SERVICE_ACCOUNT_FILE = '../service.json'
 
@@ -35,7 +30,7 @@ def get_paper_info(url):
         raise ValueError("Unsupported URL")
 
 def get_arxiv_paper_info(arxiv_url):
-    # print(arxiv_url)
+
     paper_id = arxiv_url.split('/')[-1]
     search = arxiv.Search(id_list=[paper_id])
 
@@ -64,92 +59,6 @@ def get_biorxiv_medrxiv_paper_info(url):
     except:
         abstract, pdf_link = '',''
     return abstract, pdf_link
-
-# def get_abstract(url: str) -> str:
-#     abstract = "Abstract not found"
-#     response = requests.get(url)
-#     soup = BeautifulSoup(response.content, 'html.parser')
-#
-#     if 'arxiv' in url:
-#         # Find the blockquote with 'abstract' in the class name
-#         abstract_block = soup.find('blockquote', class_=lambda x: x and 'abstract' in x)
-#         if abstract_block:
-#             # Find the span with class 'descriptor' and get the text after it
-#             descriptor = abstract_block.find('span', class_='descriptor')
-#             if descriptor:
-#                 abstract = descriptor.next_sibling.strip()
-#
-#     elif 'biorxiv' in url or 'medrxiv' in url:
-#         # Find the meta tag with name containing 'Description'
-#         meta_tag = soup.find('meta', attrs={'name': lambda x: x and 'Description' in x})
-#         if meta_tag:
-#             abstract = meta_tag.get('content', '').strip()
-#     # print(abstract)
-#     return abstract
-
-def setup_driver():
-    # Setup WebDriver
-    options = Options()
-    options.add_argument("--headless")  # Ensures Chrome launches in headless mode
-    options.add_argument("--disable-gpu")  # Disables GPU hardware acceleration
-    options.add_argument("--no-sandbox")  # Bypass OS security model (important for some Linux environments)
-    options.add_argument("--window-size=1920,1080")  # Specify the window size
-
-    # service = Service(executable_path=chromium)
-    # driver = webdriver.Chrome(service=service, options=options)
-    driver = webdriver.Chrome(options=options)
-    return driver
-
-# driver = setup_driver()
-#
-# def get_pdf_url(url):
-#     global driver
-#
-#     # try:
-#     if True:
-#         # print(url)
-#         pdf_link = None
-#
-#         # Check the domain in the URL
-#         if 'medrxiv' in url:
-#             driver.get(url)
-#             # print('medrxiv')
-#             pdf_link_element = WebDriverWait(driver, 10).until(
-#                 EC.presence_of_element_located((By.XPATH, "//a[contains(@class, 'article-dl-pdf-link') and contains(@href, '.full.pdf')]"))
-#             )
-#             if pdf_link_element:
-#                 pdf_link = pdf_link_element.get_attribute('href')
-#
-#         elif 'biorxiv' in url:
-#             driver.get(url)
-#             # print('biorxiv')
-#             pdf_link_element = WebDriverWait(driver, 10).until(
-#                 EC.presence_of_element_located((By.XPATH, "//a[contains(@class, 'article-dl-pdf-link') and contains(@href, '.full.pdf')]"))
-#             )
-#             if pdf_link_element:
-#                 pdf_link = pdf_link_element.get_attribute('href')
-#
-#         elif 'arxiv' in url:
-#             # print('arxiv')
-#             driver.get(url)
-#             print(url)
-#             if 'arxiv' in url:
-#                 pdf_link = url.replace('abs', 'pdf')
-#             pdf_link_element = WebDriverWait(driver, 10).until(
-#                 EC.presence_of_element_located((By.XPATH, "//a[contains(@class, 'mobile-submission-download')]"))
-#             )
-#             if pdf_link_element:
-#                 pdf_link = pdf_link_element.get_attribute('href')
-#
-#         if pdf_link:
-#             # print(pdf_link)
-#             return pdf_link
-#         else:
-#             return None
-
-    # except Exception as e:
-    #     print(f"Error fetching URL: {e}")
-    #     return None
 
 
 def parse_email_content(content):
@@ -262,8 +171,7 @@ def get_messages(service, user_id='me', query='from:digest@paperdigest.org subje
     """List all Messages of the user's mailbox matching the query."""
     try:
         print(query)
-        # today = datetime.now().strftime('%Y/%m/%d')
-        # query += f' after:{today}'
+
         response = service.users().messages().list(userId=user_id, q=query).execute()
         messages = []
         if 'messages' in response:
@@ -285,11 +193,6 @@ def get_message(service, user_id, msg_id):
 
 def parse_message(message):
 
-    email_data = message["payload"]["headers"]
-    # for values in email_data:
-    #     name = values["name"]
-
-    # I added the below script.
     for p in message["payload"]["parts"]:
         if p["mimeType"] in ["text/plain", "text/html"]:
             data = base64.urlsafe_b64decode(p["body"]["data"]).decode("utf-8")
@@ -307,7 +210,6 @@ def main():
         if message:
             papers = parse_message(message)
             all_papers.extend(papers)
-            # print(all_papers)
 
     with open('papers-{}.json'.format(datetime.utcnow().strftime("%Y%m%d")), 'w') as f:
         json.dump(all_papers, f, indent=2)
