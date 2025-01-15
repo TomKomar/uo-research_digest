@@ -24,7 +24,10 @@ def process_date(date, api_key, output_dir, score_threshold, downloaded_papers, 
         next_date = (datetime.strptime(date, '%Y/%m/%d') + timedelta(days=1)).strftime('%Y/%m/%d')
         previous_day = (datetime.strptime(date, '%Y/%m/%d') - timedelta(days=0)).strftime('%Y/%m/%d')
 
-        query = f'from:digest@paperdigest.org subject:"Paper Digest" after:{previous_day} before:{next_date}'
+        sender = os.environ.get('mailing_list_sender', 'digest@paperdigest.org')
+        email_title = os.environ.get('mailing_list_subject', 'Research Digest')
+
+        query = f'from:{sender} subject:"{email_title}" after:{previous_day} before:{next_date}'
         messages = get_messages(service, query=query)
         print('messages', len(messages))
 

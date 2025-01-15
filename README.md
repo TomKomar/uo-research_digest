@@ -7,12 +7,12 @@ The uo-research_digest application was developed to streamline the process of ma
 The uo-research_digest application automates the end-to-end workflow for identifying and processing research papers. It begins by retrieving research-related emails from Gmail accounts and extracting metadata such as titles, authors, abstracts, and links. Papers are scored based on their relevance to a specified researcher's profile using the OpenAI API, allowing users to prioritize the most pertinent studies. The application also downloads PDFs of research papers, converts them into text, and analyzes them using the DocAnalyzer API. Furthermore, it includes utilities to convert JSON-formatted paper data into professionally styled Word documents, making it easier for researchers to review, present, and archive their findings. This comprehensive functionality minimizes manual intervention, allowing researchers to focus on analysis rather than administrative tasks.
 
 ## Use
-To use the uo-research_digest application, start by preparing the required configuration files: an .env file containing API keys for OpenAI and DocAnalyzer, and a credentials.json file generated from your Google Cloud Platform account. Build the Docker image with the command docker build -t tgk/uo-research_digest:1, and run the application using the provided Docker command, mounting the required files and specifying an output folder. The application will retrieve emails, parse their content, and generate scored datasets of research papers. Processed papers are stored in JSON files, and PDFs are downloaded for conversion to text. The text files are uploaded to DocAnalyzer and summaries generated there are put into an MS Word document and saved for printing.
+To use the uo-research_digest application, start by preparing the required configuration files: an `.env` file containing API keys for OpenAI and DocAnalyzer, and a `credentials.json` file generated from your Google Cloud Platform account and your personal profile in plain text `profile.txt`. Build the Docker image with the command `docker build . -t tgk/uo-research_digest:1`, and run the application using the provided Docker command, mounting the required files and specifying an output folder. The application will retrieve emails, parse their content, and generate scored datasets of research papers. Processed papers are stored in JSON files, and PDFs are downloaded for conversion to text. The text files are uploaded to DocAnalyzer and summaries generated there are put into an MS Word document and saved for printing.
 
 ### Required setup
 
-You will need an account with [OpenAI](http://openai.com) and [DocAnalyzer.ai](https://docanalyzer.ai). Email retrieval has been developed for working with [Gmail](https://gmail.google.com).  
-You will need an .env file (see .env.example), credentials.json and profile.txt (see profile.txt.example) files to run the script. The .env file should contain the following variables:
+You will need an account with [OpenAI](http://openai.com) and [DocAnalyzer.ai](https://docanalyzer.ai). Email retrieval has been developed for working with [Gmail](https://gmail.google.com). You can join a premium research papers mailing list at [Paper Digest](https://www.paperdigest.org/).  
+You will need an `.env` file (see `.env.example`), `credentials.json` and `profile.txt` (see `profile.txt.example`) files to run the script. The .env file should contain the following variables:
 
 ```
 openai_api_key=YOUR_OPENAI_API_KEY
@@ -22,7 +22,14 @@ docanalyzer_token2=YOUR_DOCANALYZER_TOKEN2
 
 The crentials.json file needs to be generated in you Google Cloud Platform account.
 
-profile.txt should contain information about the researcher's profile so that the OpenAI API can score the papers based on the profile.
+profile.txt should contain information about the researcher's profile so that the OpenAI API can score the papers based on the profile.  
+
+If you use different mailing list than Paper Digest, you can change sender and email title string in `.env`, but they may require different parsing than the one used in the scripts.
+
+```
+mailing_list_sender=MAILING_LIST_SENDER_ADDRESS
+mailing_list_subject=PART_OF_SUBJECT_OF_EMAIL_FROM_MAILING_LIST
+```
 
 Build the project with the following command:
 
