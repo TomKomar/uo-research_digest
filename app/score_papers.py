@@ -76,7 +76,6 @@ def score_papers(file_path, api_key, output_file):
             response_json = call_openai_api(prompt, api_key)
             res = parse_response(response_json)
             results.extend(res['results'])
-            # print(res['results'])
         except Exception as e:
             print(e)
             pass

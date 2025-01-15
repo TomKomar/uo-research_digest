@@ -19,7 +19,6 @@ def download_file(url, output_path):
 
 def pdf_to_text(pdf_path, text_path):
     try:
-        # Open the PDF file
         with open(pdf_path, 'rb') as pdf_file:
             reader = PdfReader(pdf_file)
             text = ""

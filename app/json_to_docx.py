@@ -39,7 +39,6 @@ def create_word_document(data, output_path, openai_api_key):
     """Creates a Word document from the provided data."""
     doc = Document()
 
-    # Set document to A4 size and narrow margins
     section = doc.sections[0]
     section.page_height = Mm(297)
     section.page_width = Mm(210)
@@ -48,7 +47,6 @@ def create_word_document(data, output_path, openai_api_key):
     section.left_margin = Mm(12.7)
     section.right_margin = Mm(12.7)
 
-    # Set font sizes for different heading levels and normal text
     style = doc.styles['Normal']
     font = style.font
     font.size = Pt(9)
@@ -69,7 +67,6 @@ def create_word_document(data, output_path, openai_api_key):
     for key, value in data.items():
         print(f'Page: {key}')
         page += 1
-        # Add a page (section) for each key
         if page > 1:
             doc.add_page_break()
         doc.add_heading(key.replace('.txt', ''), level=1)

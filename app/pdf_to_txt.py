@@ -1,16 +1,8 @@
-
 import imutils.paths
 from PyPDF2 import PdfReader
 from PyPDF2.errors import PdfReadError
 
 def pdf_to_text(pdf_path, text_path):
-    """
-    Converts a PDF file to a text file.
-
-    Parameters:
-    pdf_path (str): The path to the PDF file.
-    text_path (str): The path to the output text file.
-    """
     try:
         # Open the PDF file
         with open(pdf_path, 'rb') as pdf_file:
@@ -28,8 +20,6 @@ def pdf_to_text(pdf_path, text_path):
     except PdfReadError as e:
         print(f"Error reading {pdf_path}: {e}")
 
-# Example usage:
-# pdf_to_text("example.pdf", "output.txt")
 if __name__ == '__main__':
     folder = r'/data'
     for path in imutils.paths.list_files(folder, validExts=(".pdf")):
