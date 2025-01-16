@@ -62,6 +62,9 @@ Equally, you can set any of these in your `.env` file.
 
 ---
 
+## Process
+<img src="diagram-1.svg" alt="Diagram" />
+
 ## Implementation 🔍
 ### Email Retrieval and Parsing 📧
 The process begins with retrieving emails from a Gmail account using the Gmail API. The following functions are involved:
