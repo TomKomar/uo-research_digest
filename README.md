@@ -63,7 +63,7 @@ Equally, you can set any of these in your `.env` file.
 ---
 
 ## Process
-<img src="diagram-1.svg" alt="Diagram" />
+<img src="diagram-1.svg" alt="Diagram"  height="1080px" />
 
 ## Implementation 🔍
 ### Email Retrieval and Parsing 📧
