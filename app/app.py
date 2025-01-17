@@ -1,11 +1,13 @@
 import re
-from flask import Flask, jsonify, render_template, send_from_directory
+from flask import Flask, jsonify, render_template, send_from_directory, request
 import os
+from datetime import datetime
 import json
 
 app = Flask(__name__)
 
 DATA_DIR = '/data'
+initial_datetime = datetime.now().strftime('%Y%m%d%H%M%S')
 
 def load_paper_info():
     paper_info = {}
@@ -95,6 +97,56 @@ def get_info(filename):
     print(jsonify(paper_info))
     return jsonify(paper_info)
 
+
+@app.route('/get_vote/<paper_title>', methods=['GET'])
+def get_vote(paper_title):
+    global all_votes
+
+    # filename = f'votes-{initial_datetime}.json'
+    # filepath = os.path.join(DATA_DIR, filename)
+    #
+    # if os.path.exists(filepath):
+    #     with open(filepath, 'r') as file:
+    #         votes = json.load(file)
+    vote = all_votes.get(paper_title, 0)
+
+    return jsonify({'paper_title': paper_title, 'vote': vote})
+
+@app.route('/get_all_votes', methods=['GET'])
+def get_all_votes():
+    global all_votes
+    for root, dirs, files in os.walk(DATA_DIR):
+        for file in files:
+            if file.startswith('votes-') and file.endswith('.json'):
+                filepath = os.path.join(root, file)
+                with open(filepath, 'r') as f:
+                    votes = json.load(f)
+                    all_votes.update(votes)
+
+
+@app.route('/save_vote', methods=['POST'])
+def save_vote():
+    data = request.json
+    paper_title = data.get('paper_title')
+    vote = data.get('vote')
+    filename = f'votes-{initial_datetime}.json'
+    filepath = os.path.join(DATA_DIR, filename)
+
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as file:
+            votes = json.load(file)
+    else:
+        votes = {}
+
+    votes[paper_title] = vote
+
+    with open(filepath, 'w') as file:
+        json.dump(votes, file)
+
+    return jsonify({'status': 'success'})
+
 if __name__ == '__main__':
     paper_cache = {}
+    all_votes = {}
+    get_all_votes()
     app.run(host='0.0.0.0', port=5000)

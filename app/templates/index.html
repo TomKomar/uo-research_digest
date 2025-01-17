@@ -58,7 +58,12 @@
     </div>
     <div id="divider"></div>
     <div id="view-panel">
-        <h2>Paper Information</h2>
+        <h2>Paper Information:
+            <button id="plus-button">+</button>
+            <button id="minus-button">-</button>
+            <span id="vote-display"></span>
+            <button id="save-button">Save</button>
+        </h2>
         <div id="paper-info"></div>
     </div>
 
@@ -66,6 +71,12 @@
     const divider = document.getElementById('divider');
     const listPanel = document.getElementById('list-panel');
     const viewPanel = document.getElementById('view-panel');
+    const plusButton = document.getElementById('plus-button');
+    const minusButton = document.getElementById('minus-button');
+    const saveButton = document.getElementById('save-button');
+    const voteDisplay = document.getElementById('vote-display');
+    let currentVote = 0;
+    let currentPaperTitle = '';
 
     let isDragging = false;
 
@@ -88,44 +99,112 @@
         document.removeEventListener('mouseup', onMouseUp);
     }
 
-    document.querySelectorAll('.pdf-item').forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.pdf-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            const filename = item.getAttribute('data-filename');
-            fetch(`/info/${filename}`)
-                .then(response => response.json())
-                .then(data => {
-                    const infoDiv = document.getElementById('paper-info');
-                    infoDiv.innerHTML = '';
-                    if (data) {
-                        const paper = data;
-                        const boldWords = [
-                            'background', 'research_motivations', 'identified_research_gap', 'applications',
-                            'contribution', 'tools_and_techniques', 'scaling_limits', 'method_step_by_step',
-                            'top_3_findings', 'highlights_from_conclusions_and_discussion', 'positives', 'negatives'
-                        ];
-                        let description = paper.desc;
-                        boldWords.forEach(word => {
-                            const regex = new RegExp(`\\b${word}\\b`, 'gi');
-                            description = description.replace(regex, `<strong>${word}</strong>`);
-                        });
-                        const paperDiv = document.createElement('div');
-                        paperDiv.innerHTML = `
-                            <h3>${paper.eval.title}</h3>
-                            <p><strong>Score:</strong> ${paper.eval.score}</p>
-                            <p><strong>Abstract:</strong> ${paper.eval.abstract}</p>
-                            <p><strong>Highlight:</strong> ${paper.eval.highlight}</p>
-                            <p><strong>Justification:</strong> ${paper.eval.justification}</p>
-                            <p><strong>Description:</strong> ${description}</p>
-                        `;
-                        infoDiv.appendChild(paperDiv);
-                    } else {
-                        infoDiv.innerHTML = '<p>No information available.</p>';
-                    }
-                });
+    function getRandomBrightColor() {
+        const colors = [
+            [255, Math.floor(Math.random() * 64) + 192, 0], // Red-Yellow
+            [Math.floor(Math.random() * 64) + 192, 255, 0], // Yellow-Green
+            [0, 255, Math.floor(Math.random() * 64) + 192], // Green-Cyan
+            [0, Math.floor(Math.random() * 64) + 192, 255]  // Cyan-Blue
+        ];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+    }
+
+    function updateVoteDisplay() {
+    voteDisplay.textContent = currentVote > 0 ? 'positive' : currentVote < 0 ? 'negative' : '';
+    voteDisplay.style.color = currentVote > 0 ? 'darkgreen' : currentVote < 0 ? 'orange' : 'black';
+}
+
+    plusButton.addEventListener('click', () => {
+        currentVote = 1;
+        updateVoteDisplay();
+    });
+
+    minusButton.addEventListener('click', () => {
+        currentVote = -1;
+        updateVoteDisplay();
+    });
+
+    saveButton.addEventListener('click', () => {
+        const data = {
+            paper_title: currentPaperTitle,
+            vote: currentVote
+        };
+        fetch('/save_vote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                alert('Vote saved successfully!');
+            } else {
+                alert('Failed to save vote.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the vote.');
         });
     });
+
+    document.querySelectorAll('.pdf-item').forEach(item => {
+    item.addEventListener('click', () => {
+        document.querySelectorAll('.pdf-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const filename = item.getAttribute('data-filename');
+        fetch(`/info/${filename}`)
+            .then(response => response.json())
+            .then(data => {
+                const infoDiv = document.getElementById('paper-info');
+                infoDiv.innerHTML = '';
+                if (data) {
+                    const paper = data;
+                    currentPaperTitle = paper.eval.title;
+                    const boldWords = [
+                        'background', 'research_motivations', 'identified_research_gap', 'applications',
+                        'contribution', 'tools_and_techniques', 'scaling_limits', 'method',
+                        'top_3_findings', 'highlights_from_conclusions_and_discussion', 'positives', 'negatives'
+                    ];
+                    let description = paper.desc;
+                    boldWords.forEach(word => {
+                        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                        description = description.replace(regex, `<strong>${word}</strong>`);
+                    });
+                    const paperDiv = document.createElement('div');
+                    paperDiv.innerHTML = `
+                        <h3>${paper.eval.title}</h3>
+                        <p class="info-section"><strong>Score:</strong> ${paper.eval.score}</p>
+                        <p class="info-section"><strong>Abstract:</strong> ${paper.eval.abstract}</p>
+                        <p class="info-section"><strong>Highlight:</strong> ${paper.eval.highlight}</p>
+                        <p class="info-section"><strong>Justification:</strong> ${paper.eval.justification}</p>
+                        <p class="info-section"><strong>Description:</strong> ${description}</p>
+                    `;
+                    infoDiv.appendChild(paperDiv);
+
+                    document.querySelectorAll('.info-section').forEach(section => {
+                        section.style.backgroundColor = getRandomBrightColor();
+                        section.addEventListener('click', () => {
+                            section.style.backgroundColor = getRandomBrightColor();
+                        });
+                    });
+
+                    fetch(`/get_vote/${currentPaperTitle}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            currentVote = data.vote || 0;
+                            updateVoteDisplay();
+                        });
+                } else {
+                    infoDiv.innerHTML = '<p>No information available.</p>';
+                }
+            });
+    });
+});
 </script>
+
 </body>
 </html>

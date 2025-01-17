@@ -10,7 +10,7 @@ The `uo-research_digest` application automates the end-to-end workflow for ident
 To use the `uo-research_digest` application, start by preparing the required configuration files: an `.env` file containing API keys for OpenAI and DocAnalyzer, and a `credentials.json` file generated from your Google Cloud Platform account and your personal profile in plain text `profile.txt`. Build the Docker image with the command `docker build . -t tgk/uo-research_digest:1`, and run the application using the `Docker run`, mounting the required files and specifying an output folder. The application will retrieve emails, parse their content, and generate scored datasets of research papers. Processed papers are stored in JSON files, and PDFs are downloaded for conversion to text. The text files are uploaded to DocAnalyzer and summaries generated there are put into an MS Word document and saved for printing.
 
 ## API Functionality 🌐
-The `uo-research_digest` application includes a web-based API that allows users to interact with the research paper data. The API is built using Flask and provides endpoints to view and retrieve information about the research papers.
+The `uo-research_digest` application includes a web-based GUI with backend API that allows users to interact with the research paper data. The API is built using Flask and provides endpoints to view and retrieve information about the research papers.
 
 
 ```bash
@@ -19,6 +19,28 @@ python app.py
 
 The application will be accessible at `http://0.0.0.0:5000/`.
 
+## Scoring ➕➖
+
+The scoring functionality allows users to mark research papers as either positive or negative examples. This is useful for refining model prompts by providing feedback on which papers are considered good or bad examples. The scores are saved and can be retrieved for further analysis.
+
+### Purpose ➡️
+
+The purpose of the scoring system is to help in the refinement of model prompts by identifying and marking good and bad examples of research papers. This feedback can be used to improve the model's performance by learning from the marked examples.
+
+#### Mechanics ⚙️
+
+1. **Positive and Negative Buttons**: 
+   - The interface includes two buttons labeled "Positive" and "Negative".
+   - Clicking the "Positive" button marks the current paper as a positive example.
+   - Clicking the "Negative" button marks the current paper as a negative example.
+   - The vote display updates to show the current vote status, with "Positive" votes displayed in dark green and "Negative" votes displayed in orange.
+
+2. **Saving Votes** 🏦:
+   - After marking a paper, the user can save the vote by clicking the "Save" button.
+   - The vote is saved in a JSON file with a timestamped filename format (`votes-yyyymmddhhmmss.json`).
+   - The saved votes can be retrieved later for analysis.
+
+---
 
 **Note**: The application requires the user to confirm their identity when it accesses their Gmail account. This is a standard security measure to ensure that the user is aware of the application's actions. Prompt will look similar to below snippet:
 ```
@@ -139,9 +161,23 @@ Finally, the script converts JSON data into a formatted Word document:
 - **`main()`**: Main function that reads the JSON file, calls `create_word_document` to generate the Word document, and saves it to the specified path.
 
 
-### Endpoints
+#### Scoring Implementation
+
+The implementation involves both backend and frontend changes:
+
+1. **Backend** 🖥️:
+   - A new endpoint `/save_vote` is created to handle saving votes.
+   - The votes are saved in a JSON file with a timestamped filename format.
+   - Another endpoint `/get_vote/<paper_title>` is created to retrieve the vote for a specific paper.
+   - A function `get_all_votes` is added to aggregate votes from all JSON files in the data directory.
+
+2. **Frontend** 🖥️:
+   - The HTML includes buttons for marking positive and negative votes.
+   - JavaScript handles the button clicks, updates the vote display, and sends the vote data to the backend for saving.
+   - The vote display changes color based on the vote status.
 
 
+### API Endpoints
 
 #### `GET /`
 - **Description**: Renders the main page with a list of available PDF files.
@@ -182,14 +218,8 @@ The front-end JavaScript code fetches the paper information from the `/info/<fil
 
 The application initializes a cache (`paper_cache`) to store paper information when the app starts, reducing the need to read JSON files multiple times. This cache is used to serve the paper information in the `/info/<filename>` route.
 
-### Usage
-
-To start the Flask application, run the following command:
-
 ### Example Workflow
 
 1. **View Available Papers**: Navigate to the main page to see a list of all available research papers.
 2. **Access Detailed Information**: Click on a paper to view detailed information, including title, score, abstract, highlights, justification, and description.
-3. **Highlight Important Sections**: Important sections in the description are highlighted to help users quickly identify key information.
-
----
+3. **Vote on Papers**: Use the "Positive" and "Negative" buttons to mark papers as positive or negative examples.
