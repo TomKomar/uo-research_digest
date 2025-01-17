@@ -1,5 +1,7 @@
 # uo-research_digest 📚🤖
 
+<img src="research_papers_list_preview_score.png" alt="frontend"  width="1600" />
+
 ## Motivation 💡
 The `uo-research_digest` application was developed to streamline the process of managing, analysing, and summarising research papers, addressing the needs of researchers overwhelmed by the growing volume of scientific literature. Personally, I often struggle to identify relevant papers amidst vast datasets, assess their importance, and integrate their findings efficiently. This tool consolidates various functionalities into a single pipeline, automating email retrieval, content extraction, scoring based on relevance, and document conversion. The application aims to save researchers significant time and effort while ensuring they stay updated with critical advancements in their fields.
 
