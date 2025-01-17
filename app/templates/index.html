@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Research Papers</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        #list-panel {
+            width: 30%;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            height: 100%;
+        }
+        #divider {
+            width: 5px;
+            cursor: ew-resize;
+            background-color: #ccc;
+        }
+        #view-panel {
+            width: 70%;
+            padding: 10px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            position: sticky;
+            top: 0;
+            height: 100%;
+            flex-shrink: 0;
+        }
+        .pdf-item {
+            cursor: pointer;
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .pdf-item:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .pdf-item:nth-child(even) {
+            background-color: #e9e9e9;
+        }
+        .pdf-item.active {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="list-panel">
+        <h2>PDF Files</h2>
+        <ul id="pdf-list">
+            {% for pdf in pdf_files %}
+                <li class="pdf-item" data-filename="{{ pdf.split('/')[-1].split('.')[0] }}">{{ pdf.replace('_', ' ') }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="divider"></div>
+    <div id="view-panel">
+        <h2>Paper Information</h2>
+        <div id="paper-info"></div>
+    </div>
+
+<script>
+    const divider = document.getElementById('divider');
+    const listPanel = document.getElementById('list-panel');
+    const viewPanel = document.getElementById('view-panel');
+
+    let isDragging = false;
+
+    divider.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        const offsetRight = document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
+        listPanel.style.width = `calc(100% - ${offsetRight}px)`;
+        viewPanel.style.width = `${offsetRight}px`;
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+    }
+
+    document.querySelectorAll('.pdf-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.pdf-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            const filename = item.getAttribute('data-filename');
+            fetch(`/info/${filename}`)
+                .then(response => response.json())
+                .then(data => {
+                    const infoDiv = document.getElementById('paper-info');
+                    infoDiv.innerHTML = '';
+                    if (data) {
+                        const paper = data;
+                        const boldWords = [
+                            'background', 'research_motivations', 'identified_research_gap', 'applications',
+                            'contribution', 'tools_and_techniques', 'scaling_limits', 'method_step_by_step',
+                            'top_3_findings', 'highlights_from_conclusions_and_discussion', 'positives', 'negatives'
+                        ];
+                        let description = paper.desc;
+                        boldWords.forEach(word => {
+                            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                            description = description.replace(regex, `<strong>${word}</strong>`);
+                        });
+                        const paperDiv = document.createElement('div');
+                        paperDiv.innerHTML = `
+                            <h3>${paper.eval.title}</h3>
+                            <p><strong>Score:</strong> ${paper.eval.score}</p>
+                            <p><strong>Abstract:</strong> ${paper.eval.abstract}</p>
+                            <p><strong>Highlight:</strong> ${paper.eval.highlight}</p>
+                            <p><strong>Justification:</strong> ${paper.eval.justification}</p>
+                            <p><strong>Description:</strong> ${description}</p>
+                        `;
+                        infoDiv.appendChild(paperDiv);
+                    } else {
+                        infoDiv.innerHTML = '<p>No information available.</p>';
+                    }
+                });
+        });
+    });
+</script>
+</body>
+</html>

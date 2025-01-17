@@ -9,6 +9,17 @@ The `uo-research_digest` application automates the end-to-end workflow for ident
 ## Use 🛠️
 To use the `uo-research_digest` application, start by preparing the required configuration files: an `.env` file containing API keys for OpenAI and DocAnalyzer, and a `credentials.json` file generated from your Google Cloud Platform account and your personal profile in plain text `profile.txt`. Build the Docker image with the command `docker build . -t tgk/uo-research_digest:1`, and run the application using the `Docker run`, mounting the required files and specifying an output folder. The application will retrieve emails, parse their content, and generate scored datasets of research papers. Processed papers are stored in JSON files, and PDFs are downloaded for conversion to text. The text files are uploaded to DocAnalyzer and summaries generated there are put into an MS Word document and saved for printing.
 
+## API Functionality 🌐
+The `uo-research_digest` application includes a web-based API that allows users to interact with the research paper data. The API is built using Flask and provides endpoints to view and retrieve information about the research papers.
+
+
+```bash
+python app.py
+```
+
+The application will be accessible at `http://0.0.0.0:5000/`.
+
+
 **Note**: The application requires the user to confirm their identity when it accesses their Gmail account. This is a standard security measure to ensure that the user is aware of the application's actions. Prompt will look similar to below snippet:
 ```
 Go to the following link in your browser:
@@ -126,3 +137,59 @@ Finally, the script converts JSON data into a formatted Word document:
 - **`fix_json(text_to_fix, api_key)`**: Uses the OpenAI API to fix JSON formatting issues in a given text.
 - **`create_word_document(data, output_path, openai_api_key)`**: Creates a Word document from the provided data, adding headings and content based on the JSON structure.
 - **`main()`**: Main function that reads the JSON file, calls `create_word_document` to generate the Word document, and saves it to the specified path.
+
+
+### Endpoints
+
+
+
+#### `GET /`
+- **Description**: Renders the main page with a list of available PDF files.
+- **Response**: HTML page displaying the list of PDF files and a panel to view detailed information about each paper.
+
+#### `GET /pdf/<path:filename>`
+- **Description**: Serves the PDF files from the data directory.
+- **Parameters**:
+  - `filename`: The name of the PDF file to be retrieved.
+- **Response**: The requested PDF file.
+
+#### `GET /info/<filename>`
+- **Description**: Returns the cached information about a specific paper in JSON format.
+- **Parameters**:
+  - `filename`: The name of the paper file (without extension) to retrieve information for.
+- **Response**: JSON object containing the paper's information, including title, score, abstract, highlights, justification, and description.
+
+### Example JSON Response
+
+```json
+{
+    "eval": {
+        "title": "Paper Title",
+        "score": "Paper Score",
+        "abstract": "Paper Abstract",
+        "highlight": "Paper Highlight",
+        "justification": "Paper Justification"
+    },
+    "desc": "Paper Description"
+}
+```
+
+### JavaScript Integration
+
+The front-end JavaScript code fetches the paper information from the `/info/<filename>` endpoint and displays it in the view panel. Specific keywords in the description are rendered in bold for emphasis.
+
+### Caching Mechanism
+
+The application initializes a cache (`paper_cache`) to store paper information when the app starts, reducing the need to read JSON files multiple times. This cache is used to serve the paper information in the `/info/<filename>` route.
+
+### Usage
+
+To start the Flask application, run the following command:
+
+### Example Workflow
+
+1. **View Available Papers**: Navigate to the main page to see a list of all available research papers.
+2. **Access Detailed Information**: Click on a paper to view detailed information, including title, score, abstract, highlights, justification, and description.
+3. **Highlight Important Sections**: Important sections in the description are highlighted to help users quickly identify key information.
+
+---

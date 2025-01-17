@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from json_to_docx import fix_json
 load_dotenv()
 token = os.environ['docanalyzer_token1']
 token2 = os.environ['docanalyzer_token2']
@@ -86,7 +87,7 @@ if __name__ == '__main__':
                 try:
                     answer = chat_document(token2, str(doc['docid']), 'Summarize paper background, list research motivations, identified research gap, applications, contribution, tools and techniques, scaling limits. Present method as a step by step process. Describe Top-3 findings from research. List highlights from conclusions and discussion. Find 3 positives and 3 negatives. Provide your answer in json format without any annotations nor formatting, use section title as key and content as value, e.g. {"background": "summary of detected research background information", ...}')
 
-                    conclusions[doc['name']] = answer['answer']
+                    conclusions[doc['name']] = fix_json(answer['answer'], openai_api_key)
                 except:
                     failed.append(doc['docid'])
                     time.sleep(5)

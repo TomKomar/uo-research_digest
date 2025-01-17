@@ -13,26 +13,31 @@ def read_json(file_path):
         data = json.load(file)
     return data
 
-def fix_json(text_to_fix, api_key):
+def fix_json(text_to_fix, api_key, attempts=3):
     print('Fixing JSON')
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {api_key}'
-    }
-    data = {
-        "model": "gpt-4o-mini",
-        "response_format": {"type": "json_object"},
-        "messages": [
-            {"role": "system", "content": "You are a helpful assistant that fixes JSON formatting of text that fails direct parsing. Respond with fixed JSON."},
-            {"role": "user", "content": "Fix following text so it can be parsed as JSON: \n"+text_to_fix}
-        ],
-        "max_tokens": 1500,
-        "n": 1,
-        "stop": None,
-        "temperature": 0.0
-    }
-    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
-    return response.json()['choices'][0]['message']['content'].strip()
+    succ = False
+    while not succ:
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {api_key}'
+        }
+        data = {
+            "model": "gpt-4o-mini",
+            "response_format": {"type": "json_object"},
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant that fixes JSON formatting of text that fails direct parsing. Respond with fixed JSON."},
+                {"role": "user", "content": "Fix following text so it can be parsed as JSON: \n"+text_to_fix}
+            ],
+            "max_tokens": 1500,
+            "n": 1,
+            "stop": None,
+            "temperature": 0.0
+        }
+        response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=data)
+        respfix = response.json()['choices'][0]['message']['content'].strip()
+        if type(eval(respfix)) == dict:
+            succ = True
+    return respfix
 
 
 def create_word_document(data, output_path, openai_api_key):
