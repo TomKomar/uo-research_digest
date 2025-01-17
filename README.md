@@ -5,6 +5,8 @@
 ## Motivation 💡
 The `uo-research_digest` application was developed to streamline the process of managing, analysing, and summarising research papers, addressing the needs of researchers overwhelmed by the growing volume of scientific literature. Personally, I often struggle to identify relevant papers amidst vast datasets, assess their importance, and integrate their findings efficiently. This tool consolidates various functionalities into a single pipeline, automating email retrieval, content extraction, scoring based on relevance, and document conversion. The application aims to save researchers significant time and effort while ensuring they stay updated with critical advancements in their fields.
 
+**Warning**: The application relies on a combination of online tools, some of them paid (OpenAI, DocAnalyzer), and may incur costs based on usage (Google provides a relaxed free tier). Please consider setting up accounts on these services and review the pricing and billing mechanism before running the application.
+
 ## Functionality ⚙️
 The `uo-research_digest` application automates the end-to-end workflow for identifying and processing research papers. It begins by retrieving research-related emails from Gmail accounts and extracting metadata such as titles, authors, abstracts, and links. Papers are scored based on their relevance to a specified researcher's profile using the OpenAI API, allowing users to prioritise the most pertinent studies. The application also downloads PDFs of research papers, converts them into text, and analyses them using the DocAnalyzer API. Furthermore, it includes utilities to convert JSON-formatted paper data into professionally styled Word documents, making it easier for researchers to review, present, and archive their findings. This comprehensive functionality minimises manual intervention.
 
@@ -52,8 +54,6 @@ Go to the following link in your browser:
 
 Enter verification code:
 ```
-
-**Warning**: The application relies on a combination of online tools, some of them paid (OpenAI, DocAnalyzer), and may incur costs based on usage (Google provides a relaxed free tier). Please consider setting up accounts on these services and review the pricing and billing mechanism before running the application.
 
 ### Required setup 📝
 You will need an account with [OpenAI](http://openai.com) and [DocAnalyzer.ai](https://docanalyzer.ai). Email retrieval has been developed for working with [Gmail](https://gmail.google.com). You can join a premium research papers mailing list at [Paper Digest](https://www.paperdigest.org/).
